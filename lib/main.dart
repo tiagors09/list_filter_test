@@ -1,16 +1,12 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:list_filter_test/animal_kind.dart';
+import 'package:list_filter_test/animal_list_card.dart';
+import 'package:list_filter_test/animal_viewer.dart';
 
 void main() {
   runApp(const MainApp());
-}
-
-enum AnimalKind {
-  dog,
-  cat,
-  fish,
-  horse,
 }
 
 class Animal {
@@ -33,8 +29,31 @@ class MainApp extends StatefulWidget {
 }
 
 class _MainAppState extends State<MainApp> {
+  final query = TextEditingController();
   int _selectedTile = -1;
   AnimalKind? _filter;
+  bool _isAnimalSelected = false;
+  int _selectedAnimal = -1;
+
+  void _selectAnimalKind(int index) {
+    setState(() {
+      if ((_filter == null && _selectedTile == -1) ||
+          (_filter != null && _selectedTile != index)) {
+        _filter = AnimalKind.values[index];
+        _selectedTile = index;
+      } else {
+        _filter = null;
+        _selectedTile = -1;
+      }
+    });
+  }
+
+  void _backToHome() {
+    setState(() {
+      _isAnimalSelected = false;
+      _selectedAnimal = -1;
+    });
+  }
 
   get _animals {
     return [
@@ -48,7 +67,10 @@ class _MainAppState extends State<MainApp> {
       Animal(name: 'Carl', age: 5, animalKind: AnimalKind.cat),
       Animal(name: 'Brian', age: 5, animalKind: AnimalKind.horse),
     ]
-        .where((element) => element.animalKind == _filter || _filter == null)
+        .where((element) =>
+            element.animalKind == _filter ||
+            _filter == null ||
+            query.value.toString().toLowerCase() == element.name.toLowerCase())
         .toList();
   }
 
@@ -58,55 +80,49 @@ class _MainAppState extends State<MainApp> {
       home: Scaffold(
         body: Container(
           margin: const EdgeInsets.all(20),
-          child: Column(
-            children: [
-              SizedBox(
-                height: MediaQuery.of(context).size.height * 0.075,
-                child: LayoutBuilder(
-                  builder: (_, cts) => ListView.builder(
-                    scrollDirection: Axis.horizontal,
-                    itemCount: AnimalKind.values.length,
-                    itemBuilder: (_, index) => SizedBox(
-                      height: cts.minHeight,
-                      width: cts.maxWidth * 0.5,
-                      child: Card(
-                        elevation: 1,
-                        child: ListTile(
-                          selected: _selectedTile == index ? true : false,
-                          title: Text(
-                            AnimalKind.values[index]
-                                .toString()
-                                .split('.')[1]
-                                .toUpperCase(),
+          child: !_isAnimalSelected
+              ? Column(
+                  children: [
+                    SizedBox(
+                      height: MediaQuery.of(context).size.height * 0.075,
+                      child: AnimalListCard(
+                        selectedTile: _selectedTile,
+                        onTap: _selectAnimalKind,
+                      ),
+                    ),
+                    Expanded(
+                      child: ListView.builder(
+                        itemCount: _animals.length,
+                        itemBuilder: (ctx, index) => ListTile(
+                          title: ListTile(
+                            onTap: () {
+                              setState(() {
+                                _selectedAnimal = index;
+                                _isAnimalSelected = true;
+                              });
+                            },
+                            leading: Image.network(
+                              'https://via.placeholder.com/150/92c952',
+                            ),
+                            title: Text(
+                              _animals[index].name,
+                            ),
+                            subtitle: Text(
+                              _animals[index]
+                                  .animalKind
+                                  .toString()
+                                  .split('.')[1],
+                            ),
                           ),
-                          onTap: () => setState(() {
-                            if ((_filter == null && _selectedTile == -1) ||
-                                (_filter != null && _selectedTile != index)) {
-                              _filter = AnimalKind.values[index];
-                              _selectedTile = index;
-                            } else {
-                              _filter = null;
-                              _selectedTile = -1;
-                            }
-                          }),
                         ),
                       ),
                     ),
-                  ),
+                  ],
+                )
+              : AnimalViewer(
+                  selectedAnimal: _animals[_selectedAnimal],
+                  onPressed: _backToHome,
                 ),
-              ),
-              Expanded(
-                child: ListView.builder(
-                  itemCount: _animals.length,
-                  itemBuilder: (ctx, index) => ListTile(
-                    title: Text(
-                      'Name: ${_animals[index].name}',
-                    ),
-                  ),
-                ),
-              )
-            ],
-          ),
         ),
       ),
     );
