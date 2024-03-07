@@ -76,10 +76,15 @@ class _MainAppState extends State<MainApp> {
 
   @override
   Widget build(BuildContext context) {
+    final containerWidth = MediaQuery.of(context).size.width * 0.5;
+
     return MaterialApp(
       home: Scaffold(
         body: Container(
-          margin: const EdgeInsets.all(20),
+          width: MediaQuery.of(context).size.width * 0.5,
+          padding: const EdgeInsets.all(8.0),
+          margin:
+              EdgeInsets.fromLTRB(containerWidth / 2, 0, containerWidth / 2, 0),
           child: !_isAnimalSelected
               ? Column(
                   children: [
