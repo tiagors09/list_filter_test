@@ -1,6 +1,4 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:list_filter_test/animal_kind.dart';
 import 'package:list_filter_test/animal_list_card.dart';
 import 'package:list_filter_test/animal_viewer.dart';
@@ -113,10 +111,7 @@ class _MainAppState extends State<MainApp> {
                               _animals[index].name,
                             ),
                             subtitle: Text(
-                              _animals[index]
-                                  .animalKind
-                                  .toString()
-                                  .split('.')[1],
+                              _animals[index].animalKind.label,
                             ),
                           ),
                         ),

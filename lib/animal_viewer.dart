@@ -25,10 +25,7 @@ class AnimalViewer extends StatelessWidget {
                 selectedAnimal.name,
               ),
               Text(
-                selectedAnimal.animalKind
-                    .toString()
-                    .split('.')[1]
-                    .toUpperCase(),
+                selectedAnimal.animalKind.name,
               ),
             ],
           ),

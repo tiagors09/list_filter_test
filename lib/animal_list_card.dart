@@ -24,7 +24,7 @@ class AnimalListCard extends StatelessWidget {
           child: ListTile(
             selected: selectedTile == index ? true : false,
             title: Text(
-              AnimalKind.values[index].toString().split('.')[1].toUpperCase(),
+              AnimalKind.values[index].name,
             ),
             onTap: () => onTap(index),
           ),
